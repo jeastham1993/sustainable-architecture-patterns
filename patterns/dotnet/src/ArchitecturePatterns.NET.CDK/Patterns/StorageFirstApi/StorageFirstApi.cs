@@ -1,13 +1,11 @@
-﻿namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
-
-using System;
-
+﻿using System;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SQS;
-
 using Constructs;
+
+namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
 
 public record StorageFirstApiProps(
     StorageType StorageType,
@@ -53,7 +51,7 @@ public class StorageFirstApi : Construct
                     "SqsApiIntegration",
                     integrationRole,
                     props.IntegrationName);
-                this.Queue = sqsIntegration.SqsQueue;
+                Queue = sqsIntegration.SqsQueue;
                 integration = sqsIntegration.QueueIntegration;
                 
                 break;
@@ -63,7 +61,7 @@ public class StorageFirstApi : Construct
                     "SqsApiIntegration",
                     integrationRole,
                     props.IntegrationName);
-                this.Table = dynamoIntegration.Table;
+                Table = dynamoIntegration.Table;
                 integration = dynamoIntegration.DynamoIntegration;
                 break;
             default:
@@ -73,9 +71,7 @@ public class StorageFirstApi : Construct
         var api = new RestApi(
             this,
             "FrontendApi",
-            new RestApiProps
-            {
-            }); 
+            new RestApiProps()); 
 
         Resource? lastResource = null;
 
@@ -112,6 +108,6 @@ public class StorageFirstApi : Construct
                 }
             });
 
-        this.Api = api;
+        Api = api;
     }
 }

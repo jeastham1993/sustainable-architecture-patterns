@@ -1,16 +1,10 @@
-﻿namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
-
-using System;
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
-using Amazon.CDK.AWS.SQS;
-
 using Constructs;
 
-using Attribute = System.Attribute;
+namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
 
 internal class DynamoDbApiIntegration : Construct
 {
@@ -26,13 +20,13 @@ internal class DynamoDbApiIntegration : Construct
         scope,
         id)
     {
-        this.Table = new Table(
+        Table = new Table(
             scope,
             $"{integrationName}StorageQueue",
-            new TableProps()
+            new TableProps
             {
                 BillingMode = BillingMode.PAY_PER_REQUEST,
-                PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+                PartitionKey = new Attribute
                 {
                     Name = "PK",
                     Type = AttributeType.STRING,
@@ -40,9 +34,9 @@ internal class DynamoDbApiIntegration : Construct
                 Stream = StreamViewType.KEYS_ONLY
             });
 
-        this.Table.GrantWriteData(integrationRole);
+        Table.GrantWriteData(integrationRole);
         
-        this.DynamoIntegration = new AwsIntegration(
+        DynamoIntegration = new AwsIntegration(
             new AwsIntegrationProps
             {
                 Service = "dynamodb",
@@ -54,7 +48,7 @@ internal class DynamoDbApiIntegration : Construct
                     CredentialsRole = integrationRole,
                     RequestTemplates = new Dictionary<string, string>(1)
                     {
-                        { "application/json", $"{{  \"TableName\": \"{this.Table.TableName}\",  \"Item\": {{    \"PK\": {{      \"S\": \"$context.requestId\"    }},    \"requestBody\": {{      \"S\": \"$util.escapeJavaScript($input.json('$'))\"    }},    \"timestamp\": {{      \"S\": \"$context.requestTime\"    }}  }}}}" }
+                        { "application/json", $"{{  \"TableName\": \"{Table.TableName}\",  \"Item\": {{    \"PK\": {{      \"S\": \"$context.requestId\"    }},    \"requestBody\": {{      \"S\": \"$util.escapeJavaScript($input.json('$'))\"    }},    \"timestamp\": {{      \"S\": \"$context.requestTime\"    }}  }}}}" }
                     },
                     IntegrationResponses = new List<IIntegrationResponse>(3)
                     {

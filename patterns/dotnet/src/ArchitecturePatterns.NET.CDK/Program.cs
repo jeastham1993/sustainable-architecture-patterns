@@ -1,7 +1,7 @@
-﻿namespace ArchitecturePatterns.NET.CDK
-{
-    using Amazon.CDK;
+﻿using Amazon.CDK;
 
+namespace ArchitecturePatterns.NET.CDK
+{
     sealed class Program
     {
         public static void Main(string[] args)

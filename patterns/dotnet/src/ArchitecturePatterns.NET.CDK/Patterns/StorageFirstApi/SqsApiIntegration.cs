@@ -13,16 +13,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------
 
-namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
-
 using System;
 using System.Collections.Generic;
-
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SQS;
-
 using Constructs;
+
+namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
 
 internal class SqsApiIntegration : Construct
 {
@@ -38,17 +36,17 @@ internal class SqsApiIntegration : Construct
         scope,
         id)
     {
-        this.SqsQueue = new Queue(
+        SqsQueue = new Queue(
             scope,
             $"{integrationName}StorageQueue");
 
-        this.SqsQueue.GrantSendMessages(integrationRole);
+        SqsQueue.GrantSendMessages(integrationRole);
         
-        this.QueueIntegration = new AwsIntegration(
+        QueueIntegration = new AwsIntegration(
             new AwsIntegrationProps
             {
                 Service = "sqs",
-                Path = $"{Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT")}/{this.SqsQueue.QueueName}",
+                Path = $"{Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT")}/{SqsQueue.QueueName}",
                 IntegrationHttpMethod = "POST",
                 Options = new IntegrationOptions
                 {

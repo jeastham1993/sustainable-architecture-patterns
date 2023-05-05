@@ -1,11 +1,10 @@
-﻿namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
-
-using Amazon.CDK.AWS.APIGateway;
+﻿using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SQS;
-
 using Constructs;
+
+namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
 
 public record StorageFirstRouteProps(
     StorageType StorageType,
@@ -49,7 +48,7 @@ public class StorageFirstRoute : Construct
                     "SqsApiIntegration",
                     integrationRole,
                     props.IntegrationName);
-                this.Queue = sqsIntegration.SqsQueue;
+                Queue = sqsIntegration.SqsQueue;
                 integration = sqsIntegration.QueueIntegration;
                 
                 break;
@@ -59,7 +58,7 @@ public class StorageFirstRoute : Construct
                     "SqsApiIntegration",
                     integrationRole,
                     props.IntegrationName);
-                this.Table = dynamoIntegration.Table;
+                Table = dynamoIntegration.Table;
                 integration = dynamoIntegration.DynamoIntegration;
                 break;
         }

@@ -1,17 +1,14 @@
-namespace ArchitecturePatterns.NET.CDK;
-
 using Amazon.CDK;
-using Amazon.CDK.AWS.APIGateway;
-
 using ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
-
 using Constructs;
+
+namespace ArchitecturePatterns.NET.CDK;
 
 public class DotnetStack : Stack
 {
     internal DotnetStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
     {
-        var mainApi = new RestApi(
+        /*var mainApi = new RestApi(
             this,
             "ApiSample",
             new RestApiProps { });
@@ -38,7 +35,7 @@ public class DotnetStack : Stack
             new StorageFirstApiProps(
                 StorageType.DynamoDB,
                 "SampleIntegration",
-                "/inbound/dynamo/request"));
+                "/inbound/dynamo/request"));*/
             
         var sqsApi = new StorageFirstApi(
             this,
@@ -47,23 +44,25 @@ public class DotnetStack : Stack
                 StorageType.Queue,
                 "SampleIntegration",
                 "/inbound/sqs/request"));
-            
-        var apiUrlOutput = new CfnOutput(
-            this,
-            "ApiUrl",
-            new CfnOutputProps
-            {
-                Value = api.Api.Url,
-                Description = "Endpoint of the storage first API.",
-                ExportName = "ApiUrl"
-            });
+
+        var messageProcessor = new MessageProcessor(this, "MessageProcessor", new MessageProcessorProps(sqsApi.Queue));
+        
+        // var apiUrlOutput = new CfnOutput(
+        //     this,
+        //     "ApiUrl",
+        //     new CfnOutputProps
+        //     {
+        //         Value = api.Api.Url,
+        //         Description = "Endpoint of the storage first API.",
+        //         ExportName = "ApiUrl"
+        //     });
             
         var mainApiUrlOutput = new CfnOutput(
             this,
             "MainApiUrl",
             new CfnOutputProps
             {
-                Value = api.Api.Url,
+                Value = sqsApi.Api.Url,
                 Description = "Endpoint of the pre-configured storage first API.",
                 ExportName = "MainApiUrl"
             });
