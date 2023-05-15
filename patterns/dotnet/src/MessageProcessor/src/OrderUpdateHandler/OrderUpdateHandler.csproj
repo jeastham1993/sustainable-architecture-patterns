@@ -22,4 +22,7 @@
     <ProjectReference Include="..\MessageProcessor.Orders\MessageProcessor.Orders\MessageProcessor.Orders.csproj" />
     <ProjectReference Include="..\MessageProcessor.Shared\MessageProcessor.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="aws-lambda-tools-defaults.json" />
+  </ItemGroup>
 </Project>
