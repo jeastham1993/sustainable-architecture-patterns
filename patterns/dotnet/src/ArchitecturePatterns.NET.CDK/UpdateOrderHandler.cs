@@ -7,19 +7,18 @@ using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.SQS;
 using Constructs;
 using XaasKit.CDK.AWS.Lambda.DotNet;
-using AssetOptions = Amazon.CDK.AWS.S3.Assets.AssetOptions;
 using BundlingOptions = Amazon.CDK.BundlingOptions;
 
 namespace ArchitecturePatterns.NET.CDK;
 
-public record MessageProcessorProps(IQueue RequestQueue, IEventBus EventBus);
+public record UpdateOrderHandlerProps(IQueue RequestQueue, IEventBus EventBus);
 
-public class MessageProcessor : Construct
+public class UpdateOrderHandler : Construct
 {
-    public MessageProcessor(
+    public UpdateOrderHandler(
         Construct scope,
         string id,
-        MessageProcessorProps props) : base(
+        UpdateOrderHandlerProps props) : base(
         scope,
         id)
     {
@@ -37,22 +36,22 @@ public class MessageProcessor : Construct
             }
         };
         
-        var messageProcessingFunction = new DotNetFunction(this, "message-processor", new DotNetFunctionProps()
+        var updateOrderHandlerFunction = new DotNetFunction(this, "update-order", new DotNetFunctionProps()
         {
             Runtime = Runtime.DOTNET_6,
             MemorySize = 1024,
             LogRetention = RetentionDays.ONE_DAY,
-            Handler = "MessageProcessor::MessageProcessor.Function::FunctionHandler",
-            ProjectDir = "src/MessageProcessor/src/MessageProcessor/",
+            Handler = "OrderUpdateHandler::OrderUpdateHandler.Function::FunctionHandler",
+            ProjectDir = "src/MessageProcessor/src/OrderUpdateHandler/",
             Environment = new Dictionary<string, string>(1)
             {
                 {"EVENT_BUS_NAME", props.EventBus.EventBusName}
             }
         });
-
-        props.EventBus.GrantPutEventsTo(messageProcessingFunction);
         
-        messageProcessingFunction.AddEventSource(new SqsEventSource(props.RequestQueue, new SqsEventSourceProps
+        props.EventBus.GrantPutEventsTo(updateOrderHandlerFunction);
+        
+        updateOrderHandlerFunction.AddEventSource(new SqsEventSource(props.RequestQueue, new SqsEventSourceProps
         {
             Enabled = true
         }));

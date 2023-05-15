@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MessageProcessor;
+namespace MessageProcessor.Shared;
 
 public abstract class Message
 {

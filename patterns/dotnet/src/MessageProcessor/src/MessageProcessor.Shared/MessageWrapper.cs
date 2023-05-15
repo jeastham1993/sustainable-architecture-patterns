@@ -1,13 +1,13 @@
 using System.Text.Json.Serialization;
 using AWS.Lambda.Powertools.Tracing;
 
-namespace MessageProcessor;
+namespace MessageProcessor.Shared;
 
 public class MessageWrapper<T> where T : Message
 {
-    public MessageWrapper(T data)
+    public MessageWrapper(T data, string? responseChannel = null)
     {
-        Metadata = new Metadata(data.MessageType);
+        Metadata = new Metadata(data.MessageType, responseChannel);
         Data = data;
     }
     
@@ -20,11 +20,13 @@ public class MessageWrapper<T> where T : Message
 
 public class Metadata
 {
-    public Metadata(string messageType)
+    public Metadata(string messageType, string? responseChannel = null)
     {
         MessageType = messageType;
         TraceParent = Tracing.GetEntity().TraceId;
         MessageId = Guid.NewGuid().ToString();
+        DateSent = DateTime.Now;
+        ResponseChannel = responseChannel;
     }
     
     [JsonPropertyName("traceparent")]
@@ -35,4 +37,10 @@ public class Metadata
     
     [JsonPropertyName("messageType")]
     public string MessageType { get; }
+    
+    [JsonPropertyName("responseChannel")]
+    public string? ResponseChannel { get; }
+    
+    [JsonPropertyName("dateSent")]
+    public DateTime DateSent { get; }
 }

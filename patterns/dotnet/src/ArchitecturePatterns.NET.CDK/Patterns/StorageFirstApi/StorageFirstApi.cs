@@ -46,6 +46,7 @@ public class StorageFirstApi : Construct
         switch (props.StorageType)
         {
             case StorageType.Queue:
+                
                 var sqsIntegration = new SqsApiIntegration(
                     this,
                     "SqsApiIntegration",
@@ -73,7 +74,7 @@ public class StorageFirstApi : Construct
             "FrontendApi",
             new RestApiProps()); 
 
-        Resource? lastResource = null;
+        Resource? lastResource = null;  
 
         foreach (var pathSegment in props.ApiRoute.Split('/'))
         {
@@ -94,7 +95,7 @@ public class StorageFirstApi : Construct
 
             lastResource = lastResource.AddResource(sanitisedPathSegment);
         }
-
+        
         lastResource?.AddMethod(
             "POST",
             integration,

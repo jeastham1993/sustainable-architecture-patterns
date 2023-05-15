@@ -5,6 +5,7 @@ using Amazon.Lambda.SQSEvents;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using MessageProcessor.Customer;
 using MessageProcessor.Orders;
+using MessageProcessor.Shared;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
@@ -28,17 +29,47 @@ public class Function
     {
         foreach (var record in input.Records)
         {
-            var request = JsonSerializer.Deserialize<CreateOrderRequest>(record.Body);
+            var request = JsonSerializer.Deserialize<CreateOrderCommand>(record.Body);
 
-            var customer = await _messagePublisher.Query(new GetCustomerByName(request.CustomerName));
+            var customer = await new GetCustomerByNameQuery(request.CustomerName).Send();
 
-            await _messagePublisher.Send(new CreateOrderCommand(request.CustomerName));
-
-            await _messagePublisher.Publish(new OrderCreatedEvent()
+            var order = new Order()
             {
+                CustomerId = customer.CustomerId,
+                Items = request.OrderItems.Select(p => new OrderItem()
+                    { Price = 10, ProductCode = p.Key, Quantity = p.Value }).ToList(),
+                CustomerFirstName = customer.FirstName,
+                CustomerLastName = customer.LastName
+            };
+
+            await _messagePublisher.Publish(new OrderCreatedNotificationEvent()
+            {
+                OrderId = order.OrderId,
+            });
+
+            await _messagePublisher.Publish(new OrderCreatedEvent
+            {
+                OrderId = order.OrderId,
                 CustomerName = request.CustomerName,
-                OrderId = Guid.NewGuid().ToString(),
-                OrderNumber = "ORDER1234"
+                TotalValue = order.Items.Sum(p => p.Price),
+                Items = order.Items,
+            });
+
+            if (!string.IsNullOrEmpty(request.DiscountCode)) 
+                continue;
+            
+            var discountPercentage = 20;
+                
+            order.DiscountApplied = discountPercentage;
+            order.AmountToPay = order.TotalValue * (1 - (discountPercentage / 100));
+
+            await this._messagePublisher.Publish(new OrderDiscountAppliedEvent
+            {
+                OrderId = order.OrderId,
+                CustomerId = order.CustomerId,
+                DiscountAmount = order.TotalValue - order.AmountToPay,
+                PriceBeforeDiscount = order.TotalValue,
+                PriceAfterDiscount = order.AmountToPay,
             });
         }
     }
