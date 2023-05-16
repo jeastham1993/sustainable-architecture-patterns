@@ -2,7 +2,6 @@ using System.Text.Json;
 using Amazon.EventBridge;
 using Amazon.EventBridge.Model;
 using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
 using Amazon.SQS;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Tracing;
@@ -22,44 +21,62 @@ public class MessagePublisher : IMessagePublisher
         this._sqsClient = new AmazonSQSClient();
     }
     
-    public async Task Send<T>(T message) where T : Command
+    public async Task SendCommand<T>(T message) where T : Command
     {
-        var wrapper = new MessageWrapper<T>(message, message.ResponseChannelEndpoint);
+        var wrapper = new MessageWrapper<T>(message);
         
         Logger.LogInformation($"Sending message to {message.MessageChannelEndpoint}:");
         Logger.LogInformation(JsonSerializer.Serialize(wrapper));
         
-        if (message.MessageChannelEndpoint.Contains("sns"))
-        {
-            await this._snsClient.PublishAsync(new PublishRequest(message.MessageChannelEndpoint,
-                JsonSerializer.Serialize(wrapper)));
-        }
-        else if (message.MessageChannelEndpoint.Contains("sqs"))
-        {
-            await this._sqsClient.SendMessageAsync(message.MessageChannelEndpoint, JsonSerializer.Serialize(wrapper));
-        }
+        await this._sqsClient.SendMessageAsync(message.MessageChannelEndpoint, JsonSerializer.Serialize(wrapper));
     }
     
-    public async Task Publish<T>(T message) where T : Message
+    public async Task SendQuery<T>(T message) where T : Query
+    {
+        var wrapper = new MessageWrapper<T>(message);
+        
+        Logger.LogInformation($"Sending message to {message.RequestChannelEndpoint}:");
+        Logger.LogInformation(JsonSerializer.Serialize(wrapper));
+        
+        await this._sqsClient.SendMessageAsync(message.RequestChannelEndpoint, JsonSerializer.Serialize(wrapper));
+    }
+    
+    public async Task Publish<T>(T message) where T : Event
     {
         var wrapper = new MessageWrapper<T>(message);
         
         Logger.LogInformation($"Publishing message to '{Environment.GetEnvironmentVariable("EVENT_BUS_NAME")}'");
         Logger.LogInformation(JsonSerializer.Serialize(wrapper));
-        
-        await this._eventBridgeClient.PutEventsAsync(new PutEventsRequest()
+
+        var requestEndpoint = "";
+
+        if (message.GetType() == typeof(Command))
         {
-            Entries = new List<PutEventsRequestEntry>(1)
+            var commandMessage = message as Command;
+
+            requestEndpoint = commandMessage.MessageChannelEndpoint;
+        }
+
+        if (requestEndpoint.Contains("sns"))
+        {
+            await this._snsClient.PublishAsync(requestEndpoint, JsonSerializer.Serialize(wrapper));
+        }
+        else
+        {
+            await this._eventBridgeClient.PutEventsAsync(new PutEventsRequest()
             {
-                new PutEventsRequestEntry
+                Entries = new List<PutEventsRequestEntry>(1)
                 {
-                    Detail = message.MessageType,
-                    DetailType = JsonSerializer.Serialize(wrapper),
-                    EventBusName = Environment.GetEnvironmentVariable("EVENT_BUS_NAME"),
-                    Source = "com.orders",
-                    TraceHeader = Tracing.GetEntity().TraceId,
+                    new PutEventsRequestEntry
+                    {
+                        Detail = message.MessageType,
+                        DetailType = JsonSerializer.Serialize(wrapper),
+                        EventBusName = Environment.GetEnvironmentVariable("EVENT_BUS_NAME"),
+                        Source = "com.orders",
+                        TraceHeader = Tracing.GetEntity().TraceId,
+                    }
                 }
-            }
-        });
+            });   
+        }
     }
 }

@@ -3,8 +3,11 @@ using MessageProcessor.Shared;
 
 namespace MessageProcessor.Orders;
 
-public class OrderCreatedEvent : Message
+public class OrderCreatedEvent : Event
 {
+    [JsonIgnore]
+    public override string Version => "1.0";
+    
     [JsonIgnore]
     public override string MessageType => "order-created";
     

@@ -2,7 +2,9 @@ namespace MessageProcessor.Shared;
 
 public interface IMessagePublisher
 {
-    Task Send<T>(T message) where T : Command;
+    Task SendCommand<T>(T message) where T : Command;
     
-    Task Publish<T>(T message) where T : Message;
+    Task SendQuery<T>(T message) where T : Query;
+    
+    Task Publish<T>(T message) where T : Event;
 }

@@ -7,6 +7,9 @@ public class GetCustomerByNameQuery : Query
 {
     [JsonIgnore]
     public override string MessageType => "get-customer-by-name";
+    
+    [JsonIgnore]
+    public override string Version => "1.0";
 
     public GetCustomerByNameQuery(string customerName)
     {

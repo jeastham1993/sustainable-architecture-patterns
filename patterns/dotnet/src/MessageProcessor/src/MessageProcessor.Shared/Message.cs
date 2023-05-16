@@ -6,4 +6,7 @@ public abstract class Message
 {
     [JsonIgnore]
     public abstract string MessageType { get; }
+
+    [JsonIgnore]
+    public abstract string Version { get; }
 }

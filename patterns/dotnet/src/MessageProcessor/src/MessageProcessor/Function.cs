@@ -55,7 +55,7 @@ public class Function
                 Items = order.Items,
             });
 
-            if (!string.IsNullOrEmpty(request.DiscountCode)) 
+            if (string.IsNullOrEmpty(request.DiscountCode)) 
                 continue;
             
             var discountPercentage = 20;

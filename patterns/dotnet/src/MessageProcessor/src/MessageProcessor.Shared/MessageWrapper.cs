@@ -5,9 +5,21 @@ namespace MessageProcessor.Shared;
 
 public class MessageWrapper<T> where T : Message
 {
-    public MessageWrapper(T data, string? responseChannel = null)
+    public MessageWrapper(T data)
     {
-        Metadata = new Metadata(data.MessageType, responseChannel);
+        var responseChannel = "";
+
+        if (data.GetType() == typeof(Command))
+        {
+            responseChannel = (data as Command).ResponseChannelEndpoint;
+        }
+        
+        if (data.GetType() == typeof(Query))
+        {
+            responseChannel = (data as Query).ResponseChannelEndpoint;
+        }
+        
+        Metadata = new Metadata(data.MessageType, data.Version, responseChannel);
         Data = data;
     }
     
@@ -20,13 +32,14 @@ public class MessageWrapper<T> where T : Message
 
 public class Metadata
 {
-    public Metadata(string messageType, string? responseChannel = null)
+    public Metadata(string messageType, string versionNumber, string? responseChannel = null)
     {
         MessageType = messageType;
         TraceParent = Tracing.GetEntity().TraceId;
         MessageId = Guid.NewGuid().ToString();
         DateSent = DateTime.Now;
         ResponseChannel = responseChannel;
+        VersionNumber = versionNumber;
     }
     
     [JsonPropertyName("traceparent")]
@@ -43,4 +56,7 @@ public class Metadata
     
     [JsonPropertyName("dateSent")]
     public DateTime DateSent { get; }
+    
+    [JsonPropertyName("versionNumber")]
+    public string VersionNumber { get; }
 }

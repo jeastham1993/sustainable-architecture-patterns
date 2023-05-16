@@ -5,6 +5,9 @@ namespace OrderUpdateHandler.Orders;
 
 public class UpdateOrderCommand : Command
 {
+    [JsonIgnore]
+    public override string Version => "1.0";
+    
     [JsonPropertyName("orderId")]
     public string OrderId { get; set; }
     

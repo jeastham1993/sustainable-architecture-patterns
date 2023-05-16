@@ -9,6 +9,9 @@ public class GetOrderQuery : Query
     [JsonIgnore]
     public override string MessageType => "get-order";
 
+    [JsonIgnore]
+    public override string Version => "1.0";
+
     public GetOrderQuery(string orderId)
     {
         OrderId = orderId;

@@ -12,6 +12,9 @@ public class GetCustomerByNameQuery : Query
     {
         CustomerName = customerName;
     }
+
+    [JsonIgnore]
+    public override string Version => "1.0";
     
     [JsonPropertyName("customerName")]
     public string CustomerName { get; }

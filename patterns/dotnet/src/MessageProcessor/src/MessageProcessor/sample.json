@@ -38,5 +38,96 @@
     "orderId":"752f4883-af6a-4b27-be00-b04d2baff67a",
     "CustomerName":"James Eastham"
   }
+},
+
+{
+  "metadata":{
+    "traceparent":"1-6463d391-7ec5844b7cae6ba40a2a833b",
+    "messageId":"5f2d05c9-074c-4a46-b9ba-c4a4ba069394",
+    "messageType":"order-created",
+    "responseChannel":null,
+    "dateSent":"2023-05-16T19:03:45.7316621+00:00"
+  },
+  "data":{
+    "orderId":"c49dd428-a3d4-4137-8344-1ba3e65a75a5",
+    "customerName":"James Eastham",
+    "totalValue":10,
+    "items":[
+      {
+        "ProductCode":"PROD123",
+        "Quantity":12,
+        "Price":10
+      }
+    ]
+  }
+},
+
+{
+  "metadata":{
+    "traceparent":"1-6463d391-7ec5844b7cae6ba40a2a833b",
+    "messageId":"5d2fc1ff-71fd-434e-a760-e0de42eda5fd",
+    "messageType":"order-created",
+    "responseChannel":null,
+    "dateSent":"2023-05-16T19:03:45.7038619+00:00"
+  },
+  "data":{
+    "orderId":"c49dd428-a3d4-4137-8344-1ba3e65a75a5"
+  }
+},
+
+{
+  "metadata":{
+    "traceparent":"1-6463d391-7ec5844b7cae6ba40a2a833b",
+    "messageId":"5d2fc1ff-71fd-434e-a760-e0de42eda5fd",
+    "messageType":"order-created",
+    "responseChannel":null,
+    "dateSent":"2023-05-16T19:03:45.7038619+00:00"
+  },
+  "data":{
+    "orderId":"c49dd428-a3d4-4137-8344-1ba3e65a75a5"
+  }
+},
+{
+  "metadata":{
+    "traceparent":"1-6463d33e-458b9c9c0102cac90cb47a95",
+    "messageId":"0bd79992-9251-4cce-977f-8df3f58bcdde",
+    "messageType":"order-updated",
+    "responseChannel":null,
+    "dateSent":"2023-05-16T19:02:23.8654205+00:00"
+  },
+  "data":{
+    "oldOrder":{
+      "OrderId":"20712d3b-d7ac-4443-85be-70bd36c8ee23",
+      "CustomerId":"JAMESEASTHAM",
+      "CustomerFirstName":"James",
+      "CustomerLastName":"Eastham",
+      "TotalValue":10,
+      "DiscountApplied":0,
+      "AmountToPay":0,
+      "Items":[
+        {
+          "ProductCode":"PROD123",
+          "Quantity":1,
+          "Price":10
+        }
+      ]
+    },
+    "newOrder":{
+      "OrderId":"20712d3b-d7ac-4443-85be-70bd36c8ee23",
+      "CustomerId":"JAMESEASTHAM",
+      "CustomerFirstName":"Ruben",
+      "CustomerLastName":"Eastham",
+      "TotalValue":10,
+      "DiscountApplied":0,
+      "AmountToPay":0,
+      "Items":[
+        {
+          "ProductCode":"PROD123",
+          "Quantity":1,
+          "Price":10
+        }
+      ]
+    }
+  }
 }
 ]

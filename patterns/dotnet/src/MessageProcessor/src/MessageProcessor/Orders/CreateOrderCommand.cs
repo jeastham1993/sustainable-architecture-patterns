@@ -10,6 +10,9 @@ public class CreateOrderCommand : Command
         CustomerName = customerName;
         OrderItems = orderItems;
     }
+
+    [JsonIgnore]
+    public override string Version => "1.0";
     
     [JsonPropertyName("customerName")]
     public string CustomerName { get; set; }
