@@ -27,11 +27,13 @@ internal class SqsWithUniqueIdGeneration : Construct
         scope,
         id)
     {
+        // Create role to be assumed by the workflow.
         var workflowRole = new Role(this, $"{integrationName}WorkflowRole", new RoleProps()
         {
             AssumedBy = new ServicePrincipal("states.amazonaws.com")
         });
         
+        // Generate the Queue for storing the messages, as well as a dead letter queue to handle failures.
         var dlq = new Queue(this, $"{integrationName}StorageDLQ", new QueueProps());
 
         this.Queue = new Queue(this, $"{integrationName}StorageQueue", new QueueProps
@@ -45,6 +47,7 @@ internal class SqsWithUniqueIdGeneration : Construct
 
         this.Queue.GrantSendMessages(workflowRole);
 
+        // Log group for enabling StepFunctions express workflow logs
         var logGroup = new LogGroup(this, $"{integrationName}WorkflowLogGroup", new LogGroupProps()
         {
             Retention = RetentionDays.ONE_DAY,
@@ -52,6 +55,10 @@ internal class SqsWithUniqueIdGeneration : Construct
 
         logGroup.GrantWrite(workflowRole);
         
+        // Create the workflow definition. The workflow:
+        // 1. Generates a unique identifier using the States.UUID() Intrinsic function.
+        // 2. Sends the message to SQS.
+        // 3. Formats the response to return.
         var workflowDefinition = new Pass(scope, "GenerateCaseId", new PassProps()
         {
             Parameters = new Dictionary<string, object>(4)
@@ -74,6 +81,7 @@ internal class SqsWithUniqueIdGeneration : Construct
                 }
             }));
         
+        // Create the workflow.
         Workflow = new StateMachine(
             scope,
             $"{integrationName}StorageWorkflow",
@@ -92,8 +100,10 @@ internal class SqsWithUniqueIdGeneration : Construct
                 }
             });
 
+        // Allow the API Gateway integration role to start a synchronous execution of the workflow.
         Workflow.GrantStartSyncExecution(integrationRole);
         
+        // Create the AWS integration.
         WorkflowQueueIntegration = new AwsIntegration(
             new AwsIntegrationProps
             {
@@ -105,6 +115,7 @@ internal class SqsWithUniqueIdGeneration : Construct
                     CredentialsRole = integrationRole,
                     RequestTemplates = new Dictionary<string, string>
                     {
+                        // The request template requires both the state machine ARN, as well as the input being passed in. Use the entire request body.
                         { "application/json", "{ \"stateMachineArn\": \"" + Workflow.StateMachineArn + "\", \"input\": \"$util.escapeJavaScript($input.json('$'))\" }" }
                     },
                     IntegrationResponses = new List<IIntegrationResponse>(3)
@@ -114,6 +125,7 @@ internal class SqsWithUniqueIdGeneration : Construct
                             StatusCode = "200",
                             ResponseTemplates = new Dictionary<string, string>(1)
                             {
+                                // For the response, include the output.
                                 {"application/json", "{ \"result\": $input.json('$.output'), \"status\": \"$input.json('$.status')\" }" }
                             }
 
