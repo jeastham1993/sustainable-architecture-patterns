@@ -26,7 +26,7 @@ public class GetCustomerByNameQuery : Query
     [JsonIgnore]
     public override string ResponseChannelEndpoint => "https://com.orders/customer-response";
 
-    // Dummy implementation ready for a propery async query implementation.
+    // Dummy implementation ready for a proper async query implementation.
     public async Task<GetCustomerByNameResponse> Send()
     {
         return new GetCustomerByNameResponse()

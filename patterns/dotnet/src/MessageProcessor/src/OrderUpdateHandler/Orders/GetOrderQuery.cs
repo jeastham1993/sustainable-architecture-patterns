@@ -25,7 +25,7 @@ public class GetOrderQuery : Query
 
     public async Task<Order> Send()
     {
-        return new Order()
+        return new Order("1234")
         {
             CustomerId = "JAMESEASTHAM",
             Items = new List<OrderItem>(1){ new OrderItem(){ProductCode = "PROD123", Price = 10, Quantity = 1}},

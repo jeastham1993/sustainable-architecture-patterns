@@ -38,7 +38,7 @@ public class StorageFirstRoute : Construct
                 AssumedBy = new ServicePrincipal("apigateway.amazonaws.com")
             });
 
-        AwsIntegration integration = null;
+        AwsIntegration? integration = null;
         
         switch (props.StorageType)
         {
@@ -68,7 +68,7 @@ public class StorageFirstRoute : Construct
             integration,
             new MethodOptions
             {
-                MethodResponses = new[]
+                MethodResponses = new IMethodResponse[]
                 {
                     new MethodResponse { StatusCode = "200" },
                     new MethodResponse { StatusCode = "400" },

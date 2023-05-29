@@ -3,5 +3,6 @@
 public enum StorageType
 {
     Queue,
-    DynamoDB
+    DynamoDB,
+    WorkflowWithQueue
 }

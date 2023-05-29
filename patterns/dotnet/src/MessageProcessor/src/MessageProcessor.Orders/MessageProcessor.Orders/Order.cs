@@ -2,9 +2,9 @@ namespace MessageProcessor.Orders;
 
 public class Order
 {
-    public Order()
+    public Order(string orderId)
     {
-        OrderId = Guid.NewGuid().ToString();
+        OrderId = orderId;
     }
     
     public string OrderId { get; set; }

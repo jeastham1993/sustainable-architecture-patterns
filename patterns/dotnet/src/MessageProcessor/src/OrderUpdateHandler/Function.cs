@@ -34,9 +34,8 @@ public class Function
 
             var order = await new GetOrderQuery(request.OrderId).Send();
 
-            var updatedOrder = new Order()
+            var updatedOrder = new Order(order.OrderId)
             {
-                OrderId = order.OrderId,
                 CustomerId = order.CustomerId,
                 CustomerFirstName = request.CustomerFirstName,
                 CustomerLastName = request.CustomerLastName,

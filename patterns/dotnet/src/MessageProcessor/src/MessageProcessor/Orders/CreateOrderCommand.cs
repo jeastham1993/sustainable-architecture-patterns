@@ -3,17 +3,17 @@ using MessageProcessor.Shared;
 
 namespace MessageProcessor.Orders;
 
-public class CreateOrderCommand : Command
+public record CreateOrderCommand
 {
-    public CreateOrderCommand(string customerName, Dictionary<string, int> orderItems)
-    {
-        CustomerName = customerName;
-        OrderItems = orderItems;
-    }
-
-    [JsonIgnore]
-    public override string Version => "1.0";
+    [JsonPropertyName("orderId")]
+    public string OrderId { get; set; }
     
+    [JsonPropertyName("payload")]
+    public OrderData OrderData { get; set; }
+}
+
+public record OrderData
+{
     [JsonPropertyName("customerName")]
     public string CustomerName { get; set; }
     
@@ -22,13 +22,4 @@ public class CreateOrderCommand : Command
     
     [JsonPropertyName("orderItems")]
     public Dictionary<string, int> OrderItems { get; set; }
-
-    [JsonIgnore]
-    public override string MessageType => "create-order";
-    
-    [JsonIgnore]
-    public override string MessageChannelEndpoint => Environment.GetEnvironmentVariable("CREATE_ORDER_COMMAND_TOPIC");
-
-    [JsonIgnore]
-    public override string? ResponseChannelEndpoint => null;
 }

@@ -1,9 +1,12 @@
 ﻿using System;
+using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.DynamoDB;
+using Amazon.CDK.AWS.FraudDetector;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SQS;
 using Constructs;
+using Resource = Amazon.CDK.AWS.APIGateway.Resource;
 
 namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
 
@@ -65,6 +68,12 @@ public class StorageFirstApi : Construct
                 Table = dynamoIntegration.Table;
                 integration = dynamoIntegration.DynamoIntegration;
                 break;
+            case StorageType.WorkflowWithQueue:
+                var workflowIntegration = new SqsWithUniqueIdGeneration(this, "SqsWorkflowApiIntegration",
+                    integrationRole, props.IntegrationName);
+                Queue = workflowIntegration.Queue;
+                integration = workflowIntegration.WorkflowQueueIntegration;
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -72,7 +81,15 @@ public class StorageFirstApi : Construct
         var api = new RestApi(
             this,
             "FrontendApi",
-            new RestApiProps()); 
+            new RestApiProps
+            {
+                CloudWatchRole = true,
+            });
+
+        var key = api.AddApiKey("DevelopmentApiKey", new ApiKeyOptions
+        {
+            ApiKeyName = "DevelopmentApiKey"
+        });
 
         Resource? lastResource = null;  
 
@@ -101,6 +118,7 @@ public class StorageFirstApi : Construct
             integration,
             new MethodOptions
             {
+                ApiKeyRequired = true,
                 MethodResponses = new IMethodResponse[]
                 {
                     new MethodResponse { StatusCode = "200" },
