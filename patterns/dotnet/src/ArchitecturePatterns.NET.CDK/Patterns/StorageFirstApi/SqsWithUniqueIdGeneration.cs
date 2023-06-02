@@ -51,6 +51,7 @@ internal class SqsWithUniqueIdGeneration : Construct
         var logGroup = new LogGroup(this, $"{integrationName}WorkflowLogGroup", new LogGroupProps()
         {
             Retention = RetentionDays.ONE_DAY,
+            RemovalPolicy = RemovalPolicy.DESTROY
         });
 
         logGroup.GrantWrite(workflowRole);

@@ -1,6 +1,10 @@
-﻿using Amazon.CDK.AWS.APIGateway;
+﻿using System;
+using System.Collections.Generic;
+using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
+using Amazon.CDK.AWS.Lambda;
+using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.SQS;
 using Constructs;
 
@@ -9,7 +13,8 @@ namespace ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
 public record StorageFirstRouteProps(
     StorageType StorageType,
     string IntegrationName,
-    Resource Resource);
+    IResource Resource,
+    IFunction processor);
 
 public class StorageFirstRoute : Construct
 {
@@ -43,12 +48,17 @@ public class StorageFirstRoute : Construct
         switch (props.StorageType)
         {
             case StorageType.Queue:
+                
                 var sqsIntegration = new SqsApiIntegration(
                     this,
                     "SqsApiIntegration",
                     integrationRole,
                     props.IntegrationName);
                 Queue = sqsIntegration.SqsQueue;
+                props.processor.AddEventSource(new SqsEventSource(Queue, new SqsEventSourceProps()
+                {
+                    ReportBatchItemFailures = true
+                }));
                 integration = sqsIntegration.QueueIntegration;
                 
                 break;
@@ -59,8 +69,21 @@ public class StorageFirstRoute : Construct
                     integrationRole,
                     props.IntegrationName);
                 Table = dynamoIntegration.Table;
+                props.processor.AddEventSource(new DynamoEventSource(dynamoIntegration.Table, new DynamoEventSourceProps()));
                 integration = dynamoIntegration.DynamoIntegration;
                 break;
+            case StorageType.WorkflowWithQueue:
+                var workflowIntegration = new SqsWithUniqueIdGeneration(this, "SqsWorkflowApiIntegration",
+                    integrationRole, props.IntegrationName);
+                Queue = workflowIntegration.Queue;
+                props.processor.AddEventSource(new SqsEventSource(Queue, new SqsEventSourceProps()
+                {
+                    ReportBatchItemFailures = true
+                }));
+                integration = workflowIntegration.WorkflowQueueIntegration;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
 
         props.Resource.AddMethod(

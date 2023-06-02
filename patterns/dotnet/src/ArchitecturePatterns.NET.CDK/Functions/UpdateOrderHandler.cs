@@ -9,7 +9,7 @@ using Constructs;
 using XaasKit.CDK.AWS.Lambda.DotNet;
 using BundlingOptions = Amazon.CDK.BundlingOptions;
 
-namespace ArchitecturePatterns.NET.CDK;
+namespace ArchitecturePatterns.NET.CDK.Functions;
 
 public record UpdateOrderHandlerProps(IQueue RequestQueue, IEventBus EventBus);
 
@@ -42,10 +42,11 @@ public class UpdateOrderHandler : Construct
             MemorySize = 1024,
             LogRetention = RetentionDays.ONE_DAY,
             Handler = "OrderUpdateHandler::OrderUpdateHandler.Function::FunctionHandler",
-            ProjectDir = "src/MessageProcessor/src/OrderUpdateHandler/",
+            ProjectDir = "src/CreateOrderHandler/src/OrderUpdateHandler/",
             Environment = new Dictionary<string, string>(1)
             {
-                {"EVENT_BUS_NAME", props.EventBus.EventBusName}
+                {"EVENT_BUS_NAME", props.EventBus.EventBusName},
+                {"POWERTOOLS_SERVICE_NAME", "orders"},
             }
         });
         

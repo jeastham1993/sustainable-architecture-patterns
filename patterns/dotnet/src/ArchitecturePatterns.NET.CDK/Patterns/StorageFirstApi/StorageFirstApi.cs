@@ -86,11 +86,6 @@ public class StorageFirstApi : Construct
                 CloudWatchRole = true,
             });
 
-        var key = api.AddApiKey("DevelopmentApiKey", new ApiKeyOptions
-        {
-            ApiKeyName = "DevelopmentApiKey"
-        });
-
         Resource? lastResource = null;  
 
         foreach (var pathSegment in props.ApiRoute.Split('/'))
@@ -118,7 +113,6 @@ public class StorageFirstApi : Construct
             integration,
             new MethodOptions
             {
-                ApiKeyRequired = true,
                 MethodResponses = new IMethodResponse[]
                 {
                     new MethodResponse { StatusCode = "200" },
