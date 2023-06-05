@@ -2,7 +2,7 @@ namespace MessageProcessor.Shared;
 
 public abstract class Command : Message
 {
-    public abstract string MessageChannelEndpoint { get; }
+    public abstract string? MessageChannelEndpoint { get; set; }
     
-    public abstract string? ResponseChannelEndpoint { get; }
+    public abstract string? ResponseChannelEndpoint { get; set; }
 }

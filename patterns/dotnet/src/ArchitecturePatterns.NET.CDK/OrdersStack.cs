@@ -2,6 +2,7 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Events;
+using Amazon.CDK.AWS.SQS;
 using ArchitecturePatterns.NET.CDK.Functions;
 using ArchitecturePatterns.NET.CDK.Patterns.ApplicationRoute;
 using ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
@@ -51,6 +52,8 @@ public class OrdersStack : Stack
         var getOrderStatusEndpoint = new ApplicationRoute(this, "GetOrderStatusRoute",
             new ApplicationRouteProps(getOrderStatusHandler.Function, getOrderResource, HttpMethod.GET));
 
+        var responseChannelExample = new Queue(this, "ResponseChannel");
+
         var mainApiUrlOutput = new CfnOutput(
             this,
             "MainApiUrl",
@@ -59,6 +62,16 @@ public class OrdersStack : Stack
                 Value = api.Url,
                 Description = "Endpoint of the pre-configured storage first API.",
                 ExportName = "MainApiUrl"
+            });
+
+        var responseChannelOutput = new CfnOutput(
+            this,
+            "ResponseChannelURL",
+            new CfnOutputProps
+            {
+                Value = responseChannelExample.QueueUrl,
+                Description = "Response channel URL",
+                ExportName = "ResponseChannelURL"
             });
     }
 }
