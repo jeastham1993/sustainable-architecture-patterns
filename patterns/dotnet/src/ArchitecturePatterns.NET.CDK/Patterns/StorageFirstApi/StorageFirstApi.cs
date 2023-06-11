@@ -29,6 +29,11 @@ public class StorageFirstApi : Construct
     /// </summary>
     public IQueue? Queue { get; }
     
+    /// <summary>
+    /// Populated if the <see cref="StorageType"/> is set to Queue.
+    /// </summary>
+    public IQueue? ErrorQueue { get; }
+    
     public StorageFirstApi(
         Construct scope,
         string id,
@@ -55,7 +60,8 @@ public class StorageFirstApi : Construct
                     "SqsApiIntegration",
                     integrationRole,
                     props.IntegrationName);
-                Queue = sqsIntegration.SqsQueue;
+                Queue = sqsIntegration.Queue;
+                ErrorQueue = sqsIntegration.ErrorQueue;
                 integration = sqsIntegration.QueueIntegration;
                 
                 break;
@@ -72,6 +78,7 @@ public class StorageFirstApi : Construct
                 var workflowIntegration = new SqsWithUniqueIdGeneration(this, "SqsWorkflowApiIntegration",
                     integrationRole, props.IntegrationName);
                 Queue = workflowIntegration.Queue;
+                ErrorQueue = workflowIntegration.ErrorQueue;
                 integration = workflowIntegration.WorkflowQueueIntegration;
                 break;
             default:

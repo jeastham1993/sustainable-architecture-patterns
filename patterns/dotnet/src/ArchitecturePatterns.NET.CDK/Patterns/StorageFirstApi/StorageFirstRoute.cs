@@ -28,6 +28,11 @@ public class StorageFirstRoute : Construct
     /// </summary>
     public IQueue? Queue { get; private set; }
     
+    /// <summary>
+    /// Populated if the <see cref="StorageType"/> is set to Queue.
+    /// </summary>
+    public IQueue? ErrorQueue { get; private set; }
+    
     public StorageFirstRoute(
         Construct scope,
         string id,
@@ -54,7 +59,8 @@ public class StorageFirstRoute : Construct
                     "SqsApiIntegration",
                     integrationRole,
                     props.IntegrationName);
-                Queue = sqsIntegration.SqsQueue;
+                Queue = sqsIntegration.Queue;
+                ErrorQueue = sqsIntegration.ErrorQueue;
                 props.processor.AddEventSource(new SqsEventSource(Queue, new SqsEventSourceProps()
                 {
                     ReportBatchItemFailures = true
@@ -76,6 +82,7 @@ public class StorageFirstRoute : Construct
                 var workflowIntegration = new SqsWithUniqueIdGeneration(this, "SqsWorkflowApiIntegration",
                     integrationRole, props.IntegrationName);
                 Queue = workflowIntegration.Queue;
+                ErrorQueue = workflowIntegration.ErrorQueue;
                 props.processor.AddEventSource(new SqsEventSource(Queue, new SqsEventSourceProps()
                 {
                     ReportBatchItemFailures = true

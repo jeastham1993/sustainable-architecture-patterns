@@ -29,10 +29,11 @@ public class GetCustomerByNameQuery : Query
     // Dummy implementation ready for a proper async query implementation.
     public async Task<GetCustomerByNameResponse> Send()
     {
+        // Hardcoded responses to demonstrate and force a failure.
         return new GetCustomerByNameResponse()
         {
             CustomerId = "JAMES123",
-            FirstName = "James",
+            FirstName = this.CustomerName == "failure" ? "failure" : "James",
             LastName = "Eastham"
         };
     }

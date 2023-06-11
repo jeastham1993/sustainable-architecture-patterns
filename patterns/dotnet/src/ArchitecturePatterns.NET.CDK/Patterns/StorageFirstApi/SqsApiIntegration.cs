@@ -13,7 +13,9 @@ internal class SqsApiIntegration : Construct
 {
     public AwsIntegration QueueIntegration { get; private set; }
     
-    public Queue SqsQueue { get; private set; }
+    public Queue Queue { get; private set; }
+    
+    public Queue ErrorQueue { get; private set; }
     
     public SqsApiIntegration(
         Construct scope,
@@ -23,17 +25,17 @@ internal class SqsApiIntegration : Construct
         scope,
         id)
     {
-        SqsQueue = new Queue(
+        this.Queue = new Queue(
             scope,
             $"{integrationName}StorageQueue");
 
-        SqsQueue.GrantSendMessages(integrationRole);
+        this.Queue.GrantSendMessages(integrationRole);
         
         QueueIntegration = new AwsIntegration(
             new AwsIntegrationProps
             {
                 Service = "sqs",
-                Path = $"{Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT")}/{SqsQueue.QueueName}",
+                Path = $"{Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT")}/{Queue.QueueName}",
                 IntegrationHttpMethod = "POST",
                 Options = new IntegrationOptions
                 {

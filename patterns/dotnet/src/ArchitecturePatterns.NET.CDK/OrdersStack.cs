@@ -27,6 +27,7 @@ public class OrdersStack : Stack
         var createOrderHandler = new CreateOrderHandler(this, "CreateOrderHandler", new CreateOrderHandlerProps(eventBus, persistence.Table));
         var getOrderStatusHandler = new GetOrderStatusHandler(this, "GetOrderStatus",
             new GetOrderStatusHandlerProps(persistence.Table));
+        
         var orderStatusChange = new OrderStatusChangeEventPublisher(this, "OrderStatusChangeEventPublisher", new OrderStatusChangeEventPublisherProps(eventBus, persistence.Table));
 
         // API
@@ -46,6 +47,9 @@ public class OrdersStack : Stack
                 "CreateOrderEndpoint",
                 api.Root,
                 createOrderHandler.CreateOrderHandlerFunction));
+
+        var reprocessFailedMessages = new ReprocessFailedMessages(this, "ReprocessFailedMessages",
+            new ReprocessFailedMessagesProps(createOrderEndpoint.ErrorQueue, createOrderEndpoint.Queue));
 
         var getOrderResource = api.Root.AddResource("{orderId}");
 

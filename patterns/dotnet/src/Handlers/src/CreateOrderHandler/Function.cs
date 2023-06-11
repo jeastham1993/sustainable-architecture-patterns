@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Lambda.SQSEvents;
+using Amazon.SQS;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Tracing;
@@ -58,6 +59,7 @@ public class Function
     private async Task ProcessMessage(SQSEvent.SQSMessage record)
     {
         Logger.LogInformation($"Inbound request is {record.Body}");
+        Logger.LogInformation($"Message attributes {JsonSerializer.Serialize(record.MessageAttributes)}");
         
         var request = JsonSerializer.Deserialize<CreateOrderCommand>(record.Body);
 
@@ -75,6 +77,12 @@ public class Function
             Customer = new CustomerDetail(customer.CustomerId, customer.FirstName, customer.LastName),
             Items = request.OrderData.OrderItems.Select(p => new OrderItem(p.Key, 10, p.Value)).ToList(),
         };
+
+        // Errors here for demonstration of dead letter queues.
+        if (Environment.GetEnvironmentVariable("FORCE_FAILURE") == "Y" && order.Customer.CustomerFirstName == "failure")
+        {
+            throw new Exception("Forced failure");
+        }
 
         if (!string.IsNullOrEmpty(request.OrderData.DiscountCode))
         {

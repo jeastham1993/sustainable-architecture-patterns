@@ -18,6 +18,8 @@ internal class SqsWithUniqueIdGeneration : Construct
 
     public IQueue Queue { get; }
 
+    public IQueue ErrorQueue { get; }
+
     public SqsWithUniqueIdGeneration(
         Construct scope,
         string id,
@@ -33,14 +35,14 @@ internal class SqsWithUniqueIdGeneration : Construct
         });
 
         // Generate the Queue for storing the messages, as well as a dead letter queue to handle failures.
-        var dlq = new Queue(this, $"{integrationName}StorageDLQ", new QueueProps());
+        this.ErrorQueue = new Queue(this, $"{integrationName}StorageDLQ", new QueueProps());
 
         Queue = new Queue(this, $"{integrationName}StorageQueue", new QueueProps
         {
             DeadLetterQueue = new DeadLetterQueue
             {
                 MaxReceiveCount = 3,
-                Queue = dlq
+                Queue = this.ErrorQueue
             }
         });
 
