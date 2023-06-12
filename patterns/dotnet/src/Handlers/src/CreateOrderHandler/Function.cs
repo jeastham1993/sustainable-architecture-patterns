@@ -23,11 +23,12 @@ public class Function
 
     public Function() : this(null, null)
     {
-        AWSSDKHandler.RegisterXRayForAllServices();
     }
 
     public Function(IMessagePublisher? messagePublisher, IOrderRepository? orderRepository)
     {
+        AWSSDKHandler.RegisterXRayForAllServices();
+        
         _messagePublisher = messagePublisher ?? new MessagePublisher();
         _orderRepository = orderRepository ?? new DynamoDbOrderRepository(new AmazonDynamoDBClient());
     }

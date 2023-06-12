@@ -20,11 +20,12 @@ public class Function
 
     public Function() : this(null)
     {
-        AWSSDKHandler.RegisterXRayForAllServices();
     }
 
     public Function(IMessagePublisher? messagePublisher)
     {
+        AWSSDKHandler.RegisterXRayForAllServices();
+        
         _messagePublisher = messagePublisher ?? new MessagePublisher();
     }
     

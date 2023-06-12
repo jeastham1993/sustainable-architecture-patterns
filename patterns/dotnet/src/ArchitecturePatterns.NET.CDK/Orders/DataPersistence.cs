@@ -1,3 +1,4 @@
+using Amazon.CDK;
 using Amazon.CDK.AWS.DynamoDB;
 using Constructs;
 
@@ -25,7 +26,9 @@ public class DataPersistence : Construct
                 Name = "SK",
                 Type = AttributeType.STRING
             },
-            Stream = StreamViewType.NEW_AND_OLD_IMAGES
+            Stream = StreamViewType.NEW_AND_OLD_IMAGES,
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            DeletionProtection = false
         });
     }
 }

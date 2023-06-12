@@ -17,11 +17,11 @@ public class Function
 
     public Function() : this(null)
     {
-        AWSSDKHandler.RegisterXRayForAllServices();
     }
 
     public Function(IOrderRepository? orderRepository)
     {
+        AWSSDKHandler.RegisterXRayForAllServices();
         _orderRepository = orderRepository ?? new DynamoDbOrderRepository(new AmazonDynamoDBClient());
     }
     

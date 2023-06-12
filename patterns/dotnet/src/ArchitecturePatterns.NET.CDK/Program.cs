@@ -12,9 +12,12 @@ namespace ArchitecturePatterns.NET.CDK
 
             var shared = new SharedStack(app, "SharedStack");
             
-            var ordersStack = new OrdersStack(app, "DotnetStack");
+            var ordersStack = new OrdersStack(app, "OrdersStack");
 
             var customersStack = new CustomersStack(app, "CustomerStack");
+            
+            ordersStack.AddDependency(shared);
+            customersStack.AddDependency(shared);
             
             app.Synth();
         }

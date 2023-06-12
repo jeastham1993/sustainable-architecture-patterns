@@ -55,7 +55,8 @@ public class Function
         Logger.LogInformation("Making request to legacy system:");
 
         // Dummy HTTP request
-        var res = await this._httpClient.GetAsync("https://google.com");
+        var res = 
+            await this._httpClient.GetAsync("https://google.com");
 
         Logger.LogInformation($"HTTP Result: {res.StatusCode}");
     }

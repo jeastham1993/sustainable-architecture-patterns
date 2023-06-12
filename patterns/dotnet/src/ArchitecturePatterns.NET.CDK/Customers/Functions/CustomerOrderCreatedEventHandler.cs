@@ -43,7 +43,7 @@ public class CustomerOrderCreatedEventHandler : Construct
         {
             // Only 5 messages will ever be processed at the same time
             BatchSize = 5,
-            MaxConcurrency = 1,
+            MaxConcurrency = 10,
             ReportBatchItemFailures = true
         }));
     }
