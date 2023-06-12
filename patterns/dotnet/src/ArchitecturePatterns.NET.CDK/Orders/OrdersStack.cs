@@ -1,28 +1,26 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
-using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.SQS;
-using ArchitecturePatterns.NET.CDK.Functions;
+using ArchitecturePatterns.NET.CDK.Orders.Functions;
 using ArchitecturePatterns.NET.CDK.Patterns.ApplicationRoute;
 using ArchitecturePatterns.NET.CDK.Patterns.StorageFirstApi;
 using Constructs;
 using HttpMethod = Amazon.CDK.AWS.Lambda.HttpMethod;
 
-namespace ArchitecturePatterns.NET.CDK;
+namespace ArchitecturePatterns.NET.CDK.Orders;
 
 public class OrdersStack : Stack
 {
     internal OrdersStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
     {
+        var importEventBusArn = Fn.ImportValue("SharedEventBusArn");
+
+        var eventBus = EventBus.FromEventBusArn(this, "SharedEventBus", importEventBusArn);
+
         // Shared
         var persistence = new DataPersistence(this, "DataPersistence", new DataPersistenceProps("OrdersTable"));
-        
-        var eventBus = new EventBus(this, "AppPattensEventBus", new EventBusProps
-        {
-            EventBusName = "app-patterns-event-bus",
-        });
-        
+
         // Business Logic
         var createOrderHandler = new CreateOrderHandler(this, "CreateOrderHandler", new CreateOrderHandlerProps(eventBus, persistence.Table));
         var getOrderStatusHandler = new GetOrderStatusHandler(this, "GetOrderStatus",

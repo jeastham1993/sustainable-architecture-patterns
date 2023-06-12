@@ -9,7 +9,7 @@ using Constructs;
 using XaasKit.CDK.AWS.Lambda.DotNet;
 using BundlingOptions = Amazon.CDK.BundlingOptions;
 
-namespace ArchitecturePatterns.NET.CDK.Functions;
+namespace ArchitecturePatterns.NET.CDK.Orders.Functions;
 
 public record UpdateOrderHandlerProps(IQueue RequestQueue, IEventBus EventBus);
 

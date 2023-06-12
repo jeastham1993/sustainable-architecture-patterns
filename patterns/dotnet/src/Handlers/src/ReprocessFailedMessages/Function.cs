@@ -28,7 +28,7 @@ public class Function
         await this._sqsClient.StartMessageMoveTaskAsync(new StartMessageMoveTaskRequest
         {
             DestinationArn = Environment.GetEnvironmentVariable("DESTINATION_QUEUE"),
-            SourceArn = Environment.GetEnvironmentVariable("SOURCE_QUEUE")
+            SourceArn = Environment.GetEnvironmentVariable("SOURCE_QUEUE"),
         });
     }
 }

@@ -49,6 +49,7 @@ public class Function
         {
             Logger.LogInformation("Order created event");
             
+            
             var order = JsonSerializer.Deserialize<Order>(Document.FromAttributeMap(record.Dynamodb.NewImage["Data"].M)
                 .ToJson());
             

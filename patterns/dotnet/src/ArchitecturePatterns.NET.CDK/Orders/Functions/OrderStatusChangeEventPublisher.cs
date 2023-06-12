@@ -1,15 +1,13 @@
 using System.Collections.Generic;
-using Amazon.CDK;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.Logs;
-using Amazon.CDK.AWS.SQS;
 using Constructs;
 using XaasKit.CDK.AWS.Lambda.DotNet;
 
-namespace ArchitecturePatterns.NET.CDK.Functions;
+namespace ArchitecturePatterns.NET.CDK.Orders.Functions;
 
 public record OrderStatusChangeEventPublisherProps(IEventBus EventBus, ITable OrderDataStore);
 

@@ -63,18 +63,23 @@ public class MessagePublisher : IMessagePublisher
         }
         else
         {
+            var putEventsRequestEntry = new PutEventsRequestEntry
+            {
+                Detail = JsonSerializer.Serialize(wrapper),
+                DetailType = message.MessageType,
+                EventBusName = Environment.GetEnvironmentVariable("EVENT_BUS_NAME"),
+                Source = "com.orders",
+                TraceHeader = Tracing.GetEntity().TraceId,
+            };
+            
+            Logger.LogInformation("Publishing message to EventBridge");
+            Logger.LogInformation(JsonSerializer.Serialize(putEventsRequestEntry));
+            
             await this._eventBridgeClient.PutEventsAsync(new PutEventsRequest()
             {
                 Entries = new List<PutEventsRequestEntry>(1)
                 {
-                    new PutEventsRequestEntry
-                    {
-                        Detail = message.MessageType,
-                        DetailType = JsonSerializer.Serialize(wrapper),
-                        EventBusName = Environment.GetEnvironmentVariable("EVENT_BUS_NAME"),
-                        Source = "com.orders",
-                        TraceHeader = Tracing.GetEntity().TraceId,
-                    }
+                    putEventsRequestEntry
                 }
             });   
         }

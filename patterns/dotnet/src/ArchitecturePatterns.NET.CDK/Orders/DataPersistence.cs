@@ -1,7 +1,7 @@
 using Amazon.CDK.AWS.DynamoDB;
 using Constructs;
 
-namespace ArchitecturePatterns.NET.CDK;
+namespace ArchitecturePatterns.NET.CDK.Orders;
 
 public record DataPersistenceProps(string Name);
 
